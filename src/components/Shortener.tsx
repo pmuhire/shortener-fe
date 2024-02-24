@@ -1,37 +1,39 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFetch } from '../hooks/useFetch';
 import { iUrl, iError } from './interfaces';
 import ShortenedUrl from './ShortenedUrl';
+import axios from 'axios';
 
 export const Shortener = () => {
-	const [firstRender, setFirstRender] = useState(true);
 	const [url, setUrl] = useState('');
 	const [validateInput, setValidateInput] = useState('');
-	const [urls, setUrls] = useState<iUrl[]>([]);
+	const [data, setData] = useState({
+		shortCode: '',
+		originalUrl: '',
+		shortUrl: ''
+	})
 
+	async function shorten(originalUrl: string) {
+		try {
+			const apiUrl = "https://crossorigin.me/https://shortener-1.onrender.com/api/urls/shorten";
+			// const apiUrl = "http://localhost:8080/api/urls/shorten";
+			const requestBody = {
+				originalUrl: originalUrl
+			};
+			const response = await axios.post(apiUrl, requestBody);
+			return response.data;
+		} catch (error) {
+			throw new Error(`Failed to shorten URL: `);
+		}
+	}
 	const endpoint = 'https://api.shrtco.de/v2/shorten?url=' + url;
 
-	const { data, error, loading, getData } = useFetch<iUrl, iError>(endpoint, {
+	const { error } = useFetch<iUrl, iError>(endpoint, {
 		immediate: false,
 	});
 
-	useEffect(() => {
-		const localUrls = localStorage.getItem('urls');
-		if (firstRender) {
-			if (localUrls) {
-				setUrls(JSON.parse(localUrls));
-			}
-			setFirstRender(false);
-		}
-		if (data && !loading) {
-			setUrls(urls => [...urls, data]);
-			localStorage.setItem('urls', JSON.stringify([...urls, data]));
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data, loading, firstRender]);
-
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value)
+		console.log(e.target.value)
 		if (validateInput) {
 			setValidateInput('');
 		}
@@ -44,7 +46,10 @@ export const Shortener = () => {
 			setValidateInput('Please add a link');
 			return;
 		}
-		await getData();
+		const urll = await shorten(url);
+		if (urll.sucess) {
+			setData(urll.info);
+		}
 	};
 
 	return (
@@ -58,11 +63,10 @@ export const Shortener = () => {
 						type='text'
 						value={url}
 						onChange={e => handleChange(e)}
-						className={`rounded-md p-3 w-full ${
-							(error || validateInput) ?
+						className={`rounded-md p-3 w-full ${(error || validateInput) ?
 							'text-secondary-red placeholder-secondary-red outline outline-secondary-red'
-                            : 'focus:outline-primary-cyan'
-						}`}
+							: 'focus:outline-primary-cyan'
+							}`}
 						placeholder='Shorten a link here...'
 					/>
 					{(error || validateInput) && (
@@ -79,9 +83,9 @@ export const Shortener = () => {
 				</button>
 			</form>
 			<div className='space-y-6 text-left'>
-				{urls?.map(url => (
-					<ShortenedUrl key={url.result.code} url={url} />
-				))}
+				{
+					<ShortenedUrl key={data.shortCode} url={data} />
+				}
 			</div>
 		</div>
 	);
