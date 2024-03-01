@@ -1,24 +1,24 @@
-import { CallToAction } from "./components/CalltoAction";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from "./components/Header";
-import { Shortener } from "./components/Shortener";
-import { Boost } from "./components/Boost";
 import { Footer } from "./components/Footer";
-import { Statistics } from "./components/Statistics";
+// import Home from "./pages/Home";
+import Signin from "./components/Signin";
+import Home from './pages/Home';
 
 export default function App() {
   return (
     <div className='overflow-clip'>
-      <Header />
-      <main className='relative text-center space-y-6'>
-        <CallToAction />
-
-        <div className='bg-off-white'>
-					<Shortener />
-					<Statistics />
-					<Boost />
-				</div>
-      </main>
-      <Footer />
+      <BrowserRouter>
+          <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/signin" element={<Signin />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
     </div>
   )
 }
+<>
+      
+    </>

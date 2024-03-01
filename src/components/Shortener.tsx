@@ -15,8 +15,8 @@ export const Shortener = () => {
 
 	async function shorten(originalUrl: string) {
 		try {
-			const apiUrl = "https://shortener-1.onrender.com/api/urls/shorten";
-			// const apiUrl = "http://localhost:8080/api/urls/shorten";
+			// const apiUrl = "https://shortener-1.onrender.com/api/urls/shorten";
+			const apiUrl = "http://localhost:8080/api/urls/shorten";
 			const requestBody = {
 				originalUrl: originalUrl
 			};

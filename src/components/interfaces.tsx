@@ -3,6 +3,10 @@ export interface iUrl {
 	shortUrl: string;
 	shortCode: string;
 }
+export interface userData{
+	password: string,
+	username: string
+}
 
 export interface iError {
 	ok: boolean;
